@@ -58,19 +58,61 @@ TEXT_BUDGET = 3500
 # --- fetching ----------------------------------------------------------------
 
 
+_ROBOTS_CACHE: dict[str, urllib.robotparser.RobotFileParser | None] = {}
+
+
+def load_robots(root: str) -> urllib.robotparser.RobotFileParser | None:
+    """
+    Fetch and parse robots.txt for a site root. None means "could not read it".
+
+    Deliberately not RobotFileParser.read(): that fetches with urllib's own user
+    agent, which sites behind a CDN routinely 403. Worse, read() swallows the
+    HTTPError and quietly sets disallow_all, so every can_fetch() then returns
+    False and the run looks like a polite refusal rather than a broken fetch.
+    We fetch with our own UA and let a failure be visibly a failure.
+    """
+    if root in _ROBOTS_CACHE:
+        return _ROBOTS_CACHE[root]
+
+    robots_url = f"{root}/robots.txt"
+    parser = urllib.robotparser.RobotFileParser()
+
+    try:
+        response = requests.get(
+            robots_url,
+            headers={"User-Agent": USER_AGENT, "Accept": "text/plain"},
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
+    except requests.RequestException as exc:
+        print(f"  ! could not fetch {robots_url}: {exc}", file=sys.stderr)
+        _ROBOTS_CACHE[root] = None
+        return None
+
+    if response.status_code == 404:
+        # No robots.txt at all means nothing is disallowed.
+        parser.parse([])
+    elif response.status_code == 200:
+        parser.parse(response.text.splitlines())
+    else:
+        print(
+            f"  ! {robots_url} returned HTTP {response.status_code} - "
+            "cannot confirm permission, so not crawling",
+            file=sys.stderr,
+        )
+        _ROBOTS_CACHE[root] = None
+        return None
+
+    _ROBOTS_CACHE[root] = parser
+    return parser
+
+
 def robots_allows(url: str) -> bool:
     """Check robots.txt for our user agent before fetching anything."""
     parts = urlparse(url)
-    robots_url = f"{parts.scheme}://{parts.netloc}/robots.txt"
-    parser = urllib.robotparser.RobotFileParser()
-    parser.set_url(robots_url)
-    try:
-        parser.read()
-    except Exception as exc:
-        # Unreadable robots.txt: refuse rather than assume permission.
-        print(f"  ! could not read {robots_url}: {exc}", file=sys.stderr)
+    robots = load_robots(f"{parts.scheme}://{parts.netloc}")
+    if robots is None:
         return False
-    return parser.can_fetch(USER_AGENT, url)
+    return robots.can_fetch(USER_AGENT, url)
 
 
 def fetch(url: str) -> str:
@@ -263,11 +305,36 @@ def scrape_one(path: str, html_dir: Path | None) -> dict:
     }
 
 
+def check_robots() -> int:
+    """Report what robots.txt actually says, without spending any API calls."""
+    print(f"User agent: {USER_AGENT}")
+    robots = load_robots(SOURCE)
+    if robots is None:
+        print("could not read robots.txt - see the error above", file=sys.stderr)
+        return 1
+
+    all_allowed = True
+    for path in TARGETS:
+        url = SOURCE + path
+        allowed = robots.can_fetch(USER_AGENT, url)
+        print(f"  {'allowed   ' if allowed else 'DISALLOWED'} {url}")
+        all_allowed = all_allowed and allowed
+    return 0 if all_allowed else 1
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-build", action="store_true")
     parser.add_argument("--html-dir", type=Path)
+    parser.add_argument(
+        "--check-robots",
+        action="store_true",
+        help="report robots.txt status and per-URL permission, then exit",
+    )
     args = parser.parse_args()
+
+    if args.check_robots:
+        return check_robots()
 
     print(f"Scraping {len(TARGETS)} bonuses from {SOURCE}")
 

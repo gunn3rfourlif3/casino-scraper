@@ -10,7 +10,33 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from scrape import extract_bonus_text, validate  # noqa: E402
+import urllib.robotparser  # noqa: E402
+
+from scrape import TARGETS, USER_AGENT, extract_bonus_text, validate  # noqa: E402
+
+# The relevant part of AskGamblers' robots.txt as served on 2026-10-14. Pinned here
+# so the permission check is testable without the network.
+ASKGAMBLERS_ROBOTS = """
+User-agent: *
+Disallow: /api
+Disallow: /page/review/download/
+Disallow: /r-v-
+Disallow: /r-d-
+Disallow: /admin/
+Disallow: /*visit/
+Disallow: /download/
+Disallow: /search/
+Disallow: /quick-search/
+Disallow: /*?q=
+Disallow: /html/
+Disallow: /your-country-is-restricted
+Disallow: /screenshots
+Disallow: /cdn-cgi/
+Disallow: /tags/
+Disallow: /*?*
+
+Sitemap: https://www.askgamblers.com/sitemapindex.xml
+"""
 
 FIXTURE = """
 <html><body>
@@ -77,6 +103,34 @@ def test_validate_catches_the_wrong_bonus_on_the_page():
     url = "https://www.askgamblers.com/casino-bonuses/latest/rokubet-casino-bonus-100percent-up-to-500-eur-100-free-spins-2026-10-05"
     problems = validate(record, url)
     assert any("cross-contamination" in p for p in problems)
+
+
+def _robots():
+    parser = urllib.robotparser.RobotFileParser()
+    parser.parse(ASKGAMBLERS_ROBOTS.splitlines())
+    return parser
+
+
+def test_robots_allows_every_target():
+    """
+    Regression guard. A first version fetched robots.txt via RobotFileParser.read(),
+    which uses urllib's own user agent; the CDN 403s it, read() swallows the error
+    and sets disallow_all, and every URL came back 'disallowed' for no real reason.
+    """
+    parser = _robots()
+    for path in TARGETS:
+        url = "https://www.askgamblers.com" + path
+        assert parser.can_fetch(USER_AGENT, url), f"should be allowed: {url}"
+
+
+def test_robots_still_blocks_what_it_should():
+    parser = _robots()
+    for blocked in (
+        "https://www.askgamblers.com/admin/",
+        "https://www.askgamblers.com/search/",
+        "https://www.askgamblers.com/api",
+    ):
+        assert not parser.can_fetch(USER_AGENT, blocked), f"should be blocked: {blocked}"
 
 
 def test_validate_catches_implausible_numbers():

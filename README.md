@@ -39,6 +39,7 @@ GitHub Pages at the root.
 Options:
 
 ```bash
+python scrape.py --check-robots  # report robots.txt permission only, no API calls
 python scrape.py --no-build      # write JSON only
 python build_page.py             # rebuild the page from existing JSON
 python tests/test_parsing.py     # parsing + validation tests, no network or API needed
