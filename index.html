@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Casino welcome bonuses</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #16181d;
+    --muted: #5c6370;
+    --line: #e3e5ea;
+    --accent: #1f5fd8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --fg: #e8eaee;
+      --muted: #9aa1ad;
+      --line: #2b2f37;
+      --accent: #78a6ff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px 16px 48px;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  .meta { color: var(--muted); font-size: 0.85rem; margin-bottom: 24px; }
+  a { color: var(--accent); }
+
+  /* Desktop: a real table. */
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--line); }
+  th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .casino { font-weight: 600; }
+  .basis { color: var(--muted); font-size: 0.85rem; }
+
+  /* Phone: collapse each row into a stacked card with its own labels. */
+  @media (max-width: 680px) {
+    thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    tr { display: block; border: 1px solid var(--line); border-radius: 10px; padding: 4px 12px; margin-bottom: 14px; }
+    td { display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); padding: 10px 0; }
+    tr td:last-child { border-bottom: 0; }
+    td::before { content: attr(data-label); color: var(--muted); font-size: 0.8rem; flex: 0 0 auto; }
+    td > span { text-align: right; }
+    .casino { font-size: 1.05rem; }
+  }
+  footer { margin-top: 32px; color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Casino welcome bonuses</h1>
+  <p class="meta">
+    3 casinos, scraped from <a href="https://www.askgamblers.com">www.askgamblers.com</a> on 2026-10-14 09:12:00 UTC.
+    Figures extracted with claude-haiku-5-5.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Casino</th>
+        <th>Welcome bonus</th>
+        <th>Wagering</th>
+        <th>Min deposit</th>
+        <th>Source</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="casino" data-label="Casino"><span>Rokubet Casino</span></td>
+        <td data-label="Welcome bonus"><span>100% up to 500 EUR, + 100 free spins</span></td>
+        <td data-label="Wagering"><span>40&times; <span class="basis">on bonus</span></span></td>
+        <td data-label="Min deposit"><span>15 EUR</span></td>
+        <td data-label="Source"><span><a href="https://www.askgamblers.com/casino-bonuses/latest/rokubet-casino-bonus-100percent-up-to-500-eur-100-free-spins-2026-10-05" rel="nofollow noopener">View terms</a></span></td>
+      </tr>
+      <tr>
+        <td class="casino" data-label="Casino"><span>BetBeast Casino</span></td>
+        <td data-label="Welcome bonus"><span>250% up to 1000 EUR, + 250 free spins</span></td>
+        <td data-label="Wagering"><span>25&times; <span class="basis">on deposit + bonus</span></span></td>
+        <td data-label="Min deposit"><span>20 EUR</span></td>
+        <td data-label="Source"><span><a href="https://www.askgamblers.com/casino-bonuses/latest/betbeast-casino-bonus-250percent-up-to-1000-eur-250-free-spins-2026-10-13" rel="nofollow noopener">View terms</a></span></td>
+      </tr>
+      <tr>
+        <td class="casino" data-label="Casino"><span>Spinlander Casino</span></td>
+        <td data-label="Welcome bonus"><span>120% up to 888 EUR, + 250 free spins</span></td>
+        <td data-label="Wagering"><span>45&times; <span class="basis">on deposit + bonus</span></span></td>
+        <td data-label="Min deposit"><span>20 EUR</span></td>
+        <td data-label="Source"><span><a href="https://www.askgamblers.com/casino-bonuses/latest/spinlander-casino-bonus-120percent-up-to-888-eur-2026-10-13" rel="nofollow noopener">View terms</a></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    Generated from <code>data/bonuses.json</code> by <code>build_page.py</code>.
+    Bonus terms change often &mdash; always check the source page before relying on a figure.
+    18+. Please gamble responsibly.
+  </footer>
+</main>
+</body>
+</html>

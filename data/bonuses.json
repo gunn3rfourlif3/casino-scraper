@@ -1,0 +1,44 @@
+{
+  "source": "https://www.askgamblers.com",
+  "scraped_at": "2026-10-14T09:12:00+00:00",
+  "model": "claude-haiku-5-5",
+  "casinos": [
+    {
+      "casino": "Rokubet Casino",
+      "welcome_bonus": "100% up to 500 EUR, + 100 free spins",
+      "wagering_multiplier": 40,
+      "wagering_basis": "bonus",
+      "min_deposit": 15,
+      "min_deposit_currency": "EUR",
+      "max_bonus": 500,
+      "free_spins": 100,
+      "source_url": "https://www.askgamblers.com/casino-bonuses/latest/rokubet-casino-bonus-100percent-up-to-500-eur-100-free-spins-2026-10-05",
+      "validation_warnings": []
+    },
+    {
+      "casino": "BetBeast Casino",
+      "welcome_bonus": "250% up to 1000 EUR, + 250 free spins",
+      "wagering_multiplier": 25,
+      "wagering_basis": "deposit+bonus",
+      "min_deposit": 20,
+      "min_deposit_currency": "EUR",
+      "max_bonus": 1000,
+      "free_spins": 250,
+      "source_url": "https://www.askgamblers.com/casino-bonuses/latest/betbeast-casino-bonus-250percent-up-to-1000-eur-250-free-spins-2026-10-13",
+      "validation_warnings": []
+    },
+    {
+      "casino": "Spinlander Casino",
+      "welcome_bonus": "120% up to 888 EUR, + 250 free spins",
+      "wagering_multiplier": 45,
+      "wagering_basis": "deposit+bonus",
+      "min_deposit": 20,
+      "min_deposit_currency": "EUR",
+      "max_bonus": 888,
+      "free_spins": 250,
+      "source_url": "https://www.askgamblers.com/casino-bonuses/latest/spinlander-casino-bonus-120percent-up-to-888-eur-2026-10-13",
+      "validation_warnings": []
+    }
+  ],
+  "failures": []
+}
